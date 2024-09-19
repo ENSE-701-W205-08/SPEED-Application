@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build:next-app && npm run build:nest-app",
     "build:next-app": "cd speed-app-next && npm run build",
-    "build:nest-app": "cd speed-app-nest && npm run build"
+    "build:nest-app": "cd speed-app-nest && nest build"
   },
   "author": "",
   "license": "ISC",
@@ -17,5 +17,6 @@
   },
   "devDependencies": {
     "turbo": "^2.1.2"
-  }
+  },
+  "packageManager": "npm@10.8.2"
 }
