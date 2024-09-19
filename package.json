@@ -1,0 +1,21 @@
+{
+  "name": "speed-application",
+  "version": "1.0.0",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:next-app && npm run build:nest-app",
+    "build:next-app": "cd speed-app-next && npm run build",
+    "build:nest-app": "cd speed-app-nest && npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "nestjs": "^0.0.1",
+    "next": "^14.2.12"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.2"
+  }
+}
