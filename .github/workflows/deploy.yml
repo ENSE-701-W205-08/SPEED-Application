@@ -1,8 +1,6 @@
 name: "Deploy To Vercel"
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_NEST_PROJECT_ID: ${{ secrets.VERCEL_NEST_PROJECT_ID }}
-  VERCEL_NEXT_PROJECT_ID: ${{ secrets.VERCEL_NEXT_PROJECT_ID }}
 on:
   push:
     branches-ignore:
@@ -46,14 +44,14 @@ jobs:
       - name: Building Nest Application
         working-directory: ./speed-app-nest
         env:
-          VERCEL_PROJECT_ID: $VERCEL_NEST_PROJECT_ID
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_NEST_PROJECT_ID }}
         run: "vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
             && vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}"
 
       - name: Building Next Application
         working-directory: ./speed-app-next
         env:
-          VERCEL_PROJECT_ID: $VERCEL_NEXT_PROJECT_ID
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_NEXT_PROJECT_ID }}
         run: "vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
             && vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}"
         
