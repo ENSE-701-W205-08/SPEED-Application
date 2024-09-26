@@ -1,0 +1,60 @@
+name: "Deploy To Vercel"
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_NEST_PROJECT_ID: ${{ secrets.VERCEL_NEST_PROJECT_ID }}
+  VERCEL_NEXT_PROJECT_ID: ${{ secrets.VERCEL_NEXT_PROJECT_ID }}
+on:
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+
+jobs:
+  Deploy-Nest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@latest
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Cache Node Modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list      
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      
+      - name: Building Nest Application
+        working-directory: ./speed-app-nest
+        env:
+          VERCEL_PROJECT_ID: $VERCEL_NEST_PROJECT_ID
+        run: "vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+            && vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Building Next Application
+        working-directory: ./speed-app-next
+        env:
+          VERCEL_PROJECT_ID: $VERCEL_NEXT_PROJECT_ID
+        run: "vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+            && vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}"
+        
+      
