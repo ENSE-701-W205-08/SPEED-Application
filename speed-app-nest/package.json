@@ -65,5 +65,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  "packageManager": "npm@10.8.2"
 }

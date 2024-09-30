@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^18",
@@ -23,8 +24,5 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.12"
   },
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
-  "main": "index.js",
-  "author": "",
-  "license": "ISC"
+  "packageManager": "npm@10.8.2"
 }

@@ -1,0 +1,28 @@
+{
+  "name": "speed-application",
+  "version": "1.0.0",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "turbo run build && npm run deploy",
+    "build:next-app": "cd speed-app-next && npm run build",
+    "build:nest-app": "cd speed-app-nest && npm run build",
+    "deploy:nest": "cd speed-app-nest && vercel",
+    "deploy:next": "cd speed-app-next && vercel",
+    "deploy": "npm run deploy:nest && npm run deploy:next"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "nestjs": "^0.0.1",
+    "next": "^14.2.12"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.2",
+  },
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "./*"
+  ]
+}
