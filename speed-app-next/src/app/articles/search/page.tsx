@@ -1,5 +1,3 @@
-// src/app/submission-search/page.tsx
-
 'use client'; // Mark this as a client-side component
 
 import React, { useState } from 'react';

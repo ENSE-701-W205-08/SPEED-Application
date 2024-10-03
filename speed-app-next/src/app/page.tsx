@@ -73,22 +73,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="footer text-white py-4">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <p>&copy; 2024 SPEED App. All rights reserved.</p>
-            </div>
-            <div className="col-md-6 text-md-right">
-              <a href="#" className="text-white mx-2">Privacy Policy</a>
-              <a href="#" className="text-white mx-2">Terms of Service</a>
-              <a href="mailto:info@speedapp.com" className="text-white mx-2">Contact Us</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

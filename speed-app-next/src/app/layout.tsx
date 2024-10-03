@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { ThemeProvider } from '../components/ThemeContext';
 import Navbar from '@/components/Navbar';
 import BootstrapJS from '@/components/BootstrapJS';
+import Footer from '@/components/Footer';
 
 export const metadata = {
   title: 'SPEED App',
@@ -16,7 +17,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeProvider>
           <BootstrapJS />
           <Navbar />
-          {children}
+          <div className='content-wrapper'>
+            {children}
+          </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
