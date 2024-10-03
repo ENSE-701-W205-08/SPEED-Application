@@ -1,5 +1,5 @@
 'use client';
-import 'bootstrap/dist/js/bootstrap.bundle';
+
 import React from 'react';
 import { useTheme } from '../components/ThemeContext'; // Import the theme context hook
 
