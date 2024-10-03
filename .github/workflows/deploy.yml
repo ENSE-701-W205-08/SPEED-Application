@@ -35,6 +35,9 @@ jobs:
         continue-on-error: true
         run: npm list      
 
+      - name: Install Node Modules
+        run: npm install
+      
       - name: Install Vercel CLI
         run: npm install --global vercel@37.5.2
       
