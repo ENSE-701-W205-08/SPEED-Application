@@ -1,0 +1,10 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+$primary: #007bff;
+
+@import "bootstrap/scss/bootstrap";
+
+body {
+  font-family: Arial, sans-serif;
+}
