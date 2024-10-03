@@ -1,4 +1,4 @@
-import('bootstrap/dist/js/bootstrap.bundle')
+import('bootstrap/dist/js/bootstrap.bundle.min')
 .then(() => {
   console.log('Bootstrap JS loaded');
 })
