@@ -51,21 +51,21 @@ export default function Home() {
           <div className="row">
             <div className="col-md-4">
               <blockquote className="blockquote text-center">
-                <p className="mb-0">"This app has streamlined our development processes like never before!"</p>
+                <p className="mb-0">&quot;This app has streamlined our development processes like never before!&quot;</p>
                 <br></br>
                 <footer className="blockquote-footer">John Doe, Software Engineer</footer>
               </blockquote>
             </div>
             <div className="col-md-4">
               <blockquote className="blockquote text-center">
-                <p className="mb-0">"A must-have tool for every software development team."</p>
+                <p className="mb-0">&quot;A must-have tool for every software development team.&quot;</p>
                 <br></br>
                 <footer className="blockquote-footer">Jane Smith, Project Manager</footer>
               </blockquote>
             </div>
             <div className="col-md-4">
               <blockquote className="blockquote text-center">
-                <p className="mb-0">"The features and peer review system are outstanding."</p>
+                <p className="mb-0">&quot;The features and peer review system are outstanding.&quot;</p>
                 <br></br>
                 <footer className="blockquote-footer">Mark Johnson, DevOps Engineer</footer>
               </blockquote>
