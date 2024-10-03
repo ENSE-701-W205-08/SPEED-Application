@@ -12,10 +12,10 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <BootstrapJS />
       <body>
         <ThemeProvider>
-          <BootstrapJS />
           <Navbar />
           <div className='content-wrapper'>
             {children}
