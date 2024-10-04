@@ -1,32 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { constructArticle } from '@/utils/articleHelper'; // Import helper functions
-import { postData, destinationUrl } from '@/utils/api'; // Import the reusable postData function
+import React, { useState, useEffect } from "react";
+import { constructArticle } from "@/utils/articleHelper";
+import { postData, destinationUrl } from "@/utils/api";
 
 export default function SubmissionPage() {
   // State for form input fields
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [year, setYear] = useState('');
-  const [journal, setJournal] = useState('');
-  const [volume, setVolume] = useState('');
-  const [number, setNumber] = useState('');
-  const [url, setUrl] = useState('');
-  const [issn, setIssn] = useState('');
-  const [copyright, setCopyright] = useState('');
-  
-  // BibTeX mode
-  const [bibtex, setBibtex] = useState('');
-
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [year, setYear] = useState("");
+  const [journal, setJournal] = useState("");
+  const [volume, setVolume] = useState("");
+  const [number, setNumber] = useState("");
+  const [url, setUrl] = useState("");
+  const [issn, setIssn] = useState("");
+  const [copyright, setCopyright] = useState("");
   // Common fields
-  const [doi, setDoi] = useState('');
-  const [description, setDescription] = useState('');
+  const [doi, setDoi] = useState("");
+  const [description, setDescription] = useState("");
 
   // Hidden fields (not visible to the user)
   const [isApproved, setIsApproved] = useState(false); // Article is not approved by default
-  const [dateOfSubmission, setDateOfSubmission] = useState('');
+  const [dateOfSubmission, setDateOfSubmission] = useState("");
 
+  // BibTeX mode
+  const [bibtex, setBibtex] = useState("");
   // Toggle state
   const [isBibtexMode, setIsBibtexMode] = useState(false);
 
@@ -58,13 +56,12 @@ export default function SubmissionPage() {
       issn,
       copyright,
       description,
-      isApproved, // Pass the hidden isApproved field
-      dateOfSubmission // Pass the hidden dateOfSubmission field
+      isApproved,
+      dateOfSubmission
     );
 
-    // Log the Article object for demonstration
-    console.log('Article Object:', article);
-    
+    //console.log('Article Object:', article);
+
     // Send the article object to the backend using postData
     const message = await postData(destinationUrl, article);
     setResponseMessage(message);
@@ -82,7 +79,7 @@ export default function SubmissionPage() {
         className="btn btn-secondary mb-3"
         onClick={() => setIsBibtexMode(!isBibtexMode)}
       >
-        {isBibtexMode ? 'Switch to Form Input' : 'Switch to BibTeX Input'}
+        {isBibtexMode ? "Switch to Form Input" : "Switch to BibTeX Input"}
       </button>
 
       <form onSubmit={handleSubmit}>
@@ -279,14 +276,14 @@ export default function SubmissionPage() {
           <span className="text-danger">*</span> Required fields
         </div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
       </form>
 
       {/* Display server response */}
       {responseMessage && (
-        <div className="mt-4 alert alert-info">
-          {responseMessage}
-        </div>
+        <div className="mt-4 alert alert-info">{responseMessage}</div>
       )}
     </div>
   );
