@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "bibtex-js-parser": "^1.1.6",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "next": "^14.2.14",
