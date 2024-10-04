@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { constructArticle, Article } from '@/utils/articleHelper'; // Import helper functions
+import React, { useState, useEffect } from 'react';
+import { constructArticle } from '@/utils/articleHelper'; // Import helper functions
 import { postData, destinationUrl } from '@/utils/api'; // Import the reusable postData function
 
 export default function SubmissionPage() {
@@ -22,13 +22,22 @@ export default function SubmissionPage() {
   // Common fields
   const [doi, setDoi] = useState('');
   const [description, setDescription] = useState('');
-  
+
+  // Hidden fields (not visible to the user)
+  const [isApproved, setIsApproved] = useState(false); // Article is not approved by default
+  const [dateOfSubmission, setDateOfSubmission] = useState('');
+
   // Toggle state
   const [isBibtexMode, setIsBibtexMode] = useState(false);
 
   // Output message
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [articleData, setArticleData] = useState<object | null>(null); // Store article object
+
+  // Set the submission date when the page loads
+  useEffect(() => {
+    setDateOfSubmission(new Date().toISOString()); // Set the date of submission to the current date and time
+  }, []);
 
   // Handle submission (either form or BibTeX)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,7 +57,9 @@ export default function SubmissionPage() {
       url,
       issn,
       copyright,
-      description
+      description,
+      isApproved, // Pass the hidden isApproved field
+      dateOfSubmission // Pass the hidden dateOfSubmission field
     );
 
     // Log the Article object for demonstration
@@ -167,6 +178,7 @@ export default function SubmissionPage() {
                 value={volume}
                 onChange={(e) => setVolume(e.target.value)}
                 placeholder="Enter the volume"
+                required
               />
             </div>
 
@@ -181,6 +193,7 @@ export default function SubmissionPage() {
                 value={number}
                 onChange={(e) => setNumber(e.target.value)}
                 placeholder="Enter the issue number"
+                required
               />
             </div>
 
@@ -195,6 +208,7 @@ export default function SubmissionPage() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Enter the URL"
+                required
               />
             </div>
 
@@ -209,12 +223,13 @@ export default function SubmissionPage() {
                 value={issn}
                 onChange={(e) => setIssn(e.target.value)}
                 placeholder="Enter the ISSN"
+                required
               />
             </div>
 
             <div className="mb-3">
               <label htmlFor="copyright" className="form-label">
-                Copyright <span className="text-danger">*</span>
+                Copyright
               </label>
               <input
                 type="text"
