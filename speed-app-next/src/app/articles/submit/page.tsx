@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { constructArticle } from "@/utils/articleHelper";
-import { postData, destinationUrl } from "@/utils/api";
+import { postDataArticle, destinationUrl } from "@/utils/api";
 
 export default function SubmissionPage() {
   // State for form input fields
@@ -63,7 +63,7 @@ export default function SubmissionPage() {
     //console.log('Article Object:', article);
 
     // Send the article object to the backend using postData
-    const message = await postData(destinationUrl, article);
+    const message = await postDataArticle(destinationUrl, article);
     setResponseMessage(message);
 
     // Store the article data for later use (if needed)

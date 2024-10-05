@@ -10,6 +10,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@next/env": "^14.2.14",
     "@popperjs/core": "^2.11.8",
     "bibtex-js-parser": "^1.1.6",
     "bootstrap": "^5.3.3",

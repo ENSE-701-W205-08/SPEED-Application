@@ -1,9 +1,11 @@
 // Reusable function to send a POST request to the backend
-export const destinationUrl = 'https://speed-app-nest.vercel.app/';
+const env = process.env.NODE_ENV
+export const vercelUrl = 'https://speed-app-nest.vercel.app/';
+export const destinationUrl = env === 'development' ? 'http://localhost:4000/' : vercelUrl;
 
-export async function postData(url: string, data: object): Promise<string> {
+export async function postDataArticle(url: string, data: object): Promise<string> {
     try {
-      const response = await fetch(url, {
+      const response = await fetch(url+"articles/submit/", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
