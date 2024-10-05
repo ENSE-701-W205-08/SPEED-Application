@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { IndexController } from '../controllers/index.controller';
-import { IndexService } from '../services/index.service';
+import { IndexController } from './index.controller';
+import { IndexService } from './index.service';
 
 @Module({
   imports: [],

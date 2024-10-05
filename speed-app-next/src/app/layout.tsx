@@ -1,13 +1,14 @@
-import './globals.scss';
-import { ReactNode } from 'react';
-import { ThemeProvider } from '../components/ThemeContext';
-import Navbar from '@/components/Navbar';
-import BootstrapJS from '@/components/BootstrapJS';
-import Footer from '@/components/Footer';
+import "./globals.scss";
+import { ReactNode } from "react";
+import { ThemeProvider } from "../components/ThemeContext";
+import Navbar from "@/components/Navbar";
+import BootstrapJS from "@/components/BootstrapJS";
+import Footer from "@/components/Footer";
+import { AuthProvider } from "@/utils/AuthContext"; // Import the AuthProvider
 
 export const metadata = {
-  title: 'SPEED App',
-  description: 'A web application for evidence-based software practices',
+  title: "SPEED App",
+  description: "A web application for evidence-based software practices",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -16,11 +17,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <BootstrapJS />
       <body>
         <ThemeProvider>
-          <Navbar />
-          <div className='content-wrapper'>
-            {children}
-          </div>
-          <Footer />
+          <AuthProvider>
+            <Navbar />
+            <div className="content-wrapper">{children}</div>
+            <Footer />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

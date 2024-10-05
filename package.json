@@ -9,7 +9,9 @@
     "build:nest-app": "cd speed-app-nest && npm run build",
     "deploy:nest": "cd speed-app-nest && vercel",
     "deploy:next": "cd speed-app-next && vercel",
-    "deploy": "npm run deploy:nest && npm run deploy:next"
+    "deploy": "npm run deploy:nest && npm run deploy:next",
+    "start:nest": "cd speed-app-nest && npm run build && npm run start",
+    "start:next": "cd speed-app-next && npm run build && npm run start"
   },
   "author": "",
   "license": "ISC",

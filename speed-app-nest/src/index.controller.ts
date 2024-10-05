@@ -1,5 +1,5 @@
 import { Controller, Get, Redirect } from '@nestjs/common';
-import { IndexService } from '../services/index.service';
+import { IndexService } from './index.service';
 
 @Controller()
 export class IndexController {

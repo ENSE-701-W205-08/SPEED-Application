@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Redirect } from '@nestjs/common';
-import { ArticleService } from '../services/article.service';
-import { CreateArticleDto } from '../dto/create-article.dto';
-import { Article } from '../schemas/article.schema';
+import { ArticleService } from './article.service';
+import { CreateArticleDto } from './dto/create-article.dto';
+import { Article } from './article.schema';
 
 @Controller('articles')
 export class ArticleController {
