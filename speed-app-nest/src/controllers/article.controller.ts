@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Redirect } from '@nestjs/common';
 import { ArticleService } from '../services/article.service';
 import { CreateArticleDto } from '../dto/create-article.dto';
 import { Article } from '../schemas/article.schema';
@@ -12,5 +12,12 @@ export class ArticleController {
     @Body() createArticleDto: CreateArticleDto,
   ): Promise<Article> {
     return this.articleService.create(createArticleDto);
+  }
+
+  // Redirect to the Next.js app
+  @Get('submit')
+  @Redirect('https://speed-app-next.vercel.app')
+  redirectOut() {
+    return { url: 'https://speed-app-next.vercel.app' };
   }
 }
