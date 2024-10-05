@@ -3,8 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ArticleModule } from './modules/article.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 
+@Module({
+  imports: [],
+  controllers: [AppController],
+  providers: [AppService],
+})
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +27,5 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     // Import other modules
     ArticleModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
