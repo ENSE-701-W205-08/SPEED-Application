@@ -1,79 +1,81 @@
+'use client'
+
 import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 
 // Define the shape of the context state and actions
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: () => void;
+  login: (token: string, expiryTime: number) => void;
   logout: () => void;
+  resetExpiryTime: () => void; // Function to reset expiry when user is active
 }
 
 // Create a default context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Set timeout duration (e.g., 15 minutes)
-const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [tokenExpiry, setTokenExpiry] = useState<number | null>(null);
 
-  // Function to clear the timeout (if exists)
-  const clearLogoutTimeout = useCallback(() => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-  }, [timeoutId]);
-
-  // Function to set a timeout to automatically log the user out
-  const setLogoutTimeout = useCallback(() => {
-    clearLogoutTimeout(); // Clear any existing timeout
-    const id = setTimeout(() => {
-      logout(); // Automatically log out the user
-    }, TIMEOUT_DURATION); // Set the timeout duration
-    setTimeoutId(id); // Store the timeout ID so we can clear it later
-  }, [clearLogoutTimeout]);
-
-  // Handle user login
-  const login = () => {
-    setIsLoggedIn(true);
-    setLogoutTimeout(); // Set the logout timeout after login
-  };
-
-  // Handle user logout
+  // Function to handle user logout
   const logout = useCallback(() => {
-    localStorage.removeItem('token'); // Remove the token on logout
-    setIsLoggedIn(false);
-    clearLogoutTimeout(); // Clear the timeout when logging out
-  }, [clearLogoutTimeout]);
+    localStorage.removeItem('token'); // Clear the token on logout
+    localStorage.removeItem('tokenExpiry'); // Clear token expiry time
+    setTokenExpiry(null); // Clear the expiry time from state
+    setIsLoggedIn(false); // Set the logged-out state
+    console.log('User logged out');
+  }, []);
 
-  // Check for token in localStorage to set initial logged-in state
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // Set to true if token exists
-    if (token) {
-      setLogoutTimeout(); // Set the timeout if the user is already logged in
+  // Function to handle user login and store token and its expiry time
+  const login = useCallback((token: string, expiryTime: number) => {
+    localStorage.setItem('token', token); // Store the token
+    localStorage.setItem('tokenExpiry', expiryTime.toString()); // Store the expiry time in localStorage
+    setTokenExpiry(expiryTime); // Set expiry time in state
+    setIsLoggedIn(true); // Set logged-in state
+    console.log('User logged in, expiry set to:', new Date(expiryTime).toISOString());
+  }, []);
+
+  // Function to reset expiry time when the user is active
+  const resetExpiryTime = useCallback(() => {
+    if (isLoggedIn && tokenExpiry) {
+      const newExpiryTime = Date.now() + (15 * 60 * 1000); // Extend the session by 15 minutes
+      localStorage.setItem('tokenExpiry', newExpiryTime.toString()); // Update in localStorage
+      setTokenExpiry(newExpiryTime); // Update expiry time in state
+      console.log('Token expiry extended to:', new Date(newExpiryTime).toISOString());
     }
-  }, [setLogoutTimeout]);
+  }, [isLoggedIn, tokenExpiry]);
 
-  // Track user activity (mouse movement or key press) to reset the logout timeout
+  // Timer to check every minute if the token has expired
   useEffect(() => {
-    const handleActivity = () => {
-      if (isLoggedIn) {
-        setLogoutTimeout(); // Reset the timeout on any user activity
+    const checkTokenExpiry = () => {
+      if (tokenExpiry && Date.now() >= tokenExpiry) {
+        logout(); // Logout the user if the expiry time has passed
       }
     };
 
-    window.addEventListener('mousemove', handleActivity); // Track mouse movement
-    window.addEventListener('keydown', handleActivity); // Track key presses
+    const intervalId = setInterval(checkTokenExpiry, 60 * 1000); // Check every minute
+    return () => clearInterval(intervalId); // Cleanup the interval on component unmount
+  }, [tokenExpiry, logout]);
 
-    return () => {
-      window.removeEventListener('mousemove', handleActivity); // Cleanup event listeners
-      window.removeEventListener('keydown', handleActivity);
-    };
-  }, [isLoggedIn, setLogoutTimeout]);
+  // Check for token and its expiry on app load
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedExpiry = localStorage.getItem('tokenExpiry');
+
+    if (storedToken && storedExpiry) {
+      const expiryTime = parseInt(storedExpiry, 10);
+      if (Date.now() < expiryTime) {
+        setTokenExpiry(expiryTime); // Set the expiry time from localStorage
+        setIsLoggedIn(true); // Set the user as logged in
+        console.log('User logged in from localStorage, expiry:', new Date(expiryTime).toISOString());
+      } else {
+        logout(); // If the token has expired, log the user out
+      }
+    }
+  }, [logout]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, resetExpiryTime }}>
       {children}
     </AuthContext.Provider>
   );

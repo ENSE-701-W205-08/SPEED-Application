@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAdmin } from "@/utils/api"; // Assume this sends login request to the backend
 import { useAuth } from "@/utils/AuthContext"; // Import the AuthContext
@@ -9,21 +9,22 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { login } = useAuth(); // Access the global login function
+  const { isLoggedIn, login } = useAuth(); // Access global login state and login action
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(""); // Clear any previous error messages
+    setErrorMessage('');
 
     try {
       const response = await loginAdmin(email, password); // API call to authenticate user
-      localStorage.setItem("token", response.token); // Store the JWT token in localStorage
+      const token = response.token; // Token returned from the backend
+      const expiryTime = Date.now() + 1 * 60 * 1000;
 
-      login(); // Call the global login function to update isLoggedIn state
-      router.push("/admin/dashboard"); // Redirect to the dashboard after login
-    } catch (error) {
-      setErrorMessage((error as Error).message || "Error logging in");
+      login(token, expiryTime); // Call the global login function with token and expiry time
+      router.push('/admin/dashboard'); // Redirect to the dashboard
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Error logging in');
     }
   };
 
