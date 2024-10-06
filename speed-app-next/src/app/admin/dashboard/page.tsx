@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/utils/AuthContext';
+import AdminStatsCard from '@/components/AdminStatsCard';
 
 const AdminDashboard = () => {
     const { isLoggedIn } = useAuth(); // Access the login state
@@ -19,6 +20,11 @@ const AdminDashboard = () => {
     <div className="container py-5">
       <h1>Welcome to the Admin Dashboard</h1>
       {/* Admin dashboard content goes here */}
+        {
+            isLoggedIn && (
+                <AdminStatsCard />
+            )
+        }
     </div>
   );
 };

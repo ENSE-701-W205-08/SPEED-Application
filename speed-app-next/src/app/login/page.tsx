@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,19 +14,25 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage('');
+    setErrorMessage("");
 
     try {
       const response = await loginAdmin(email, password); // API call to authenticate user
       const token = response.token; // Token returned from the backend
-      const expiryTime = Date.now() + 1 * 60 * 1000;
+      const expiryTime = Date.now() + 15 * 60 * 1000;
 
       login(token, expiryTime); // Call the global login function with token and expiry time
-      router.push('/admin/dashboard'); // Redirect to the dashboard
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Error logging in');
+      router.push("/admin/dashboard"); // Redirect to the dashboard
+    } catch (error) {
+      setErrorMessage((error as Error).message || "Error logging in");
     }
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/admin/dashboard"); // Redirect to the dashboard if already logged in
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <div className="login-container">
