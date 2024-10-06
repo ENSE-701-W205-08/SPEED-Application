@@ -3,6 +3,7 @@ import { BibtexParser } from 'bibtex-js-parser';
 
 // Define the Article class for OOP-style querying
 export class Article {
+  _id?: string;
   title: string;
   author: string;
   year: number;

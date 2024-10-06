@@ -3,13 +3,22 @@
 "use client"; // Ensure this is a client-side component
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React from "react";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "./ThemeContext";
+import { useAuth } from '@/utils/AuthContext'; // Import the AuthContext
+
 
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { isLoggedIn, logout } = useAuth(); // Access global login state and actions
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout(); // Call the global logout function
+    router.push('/login'); // Redirect to login page after logout
+  };
 
   const navBarTheme =
     theme == "dark" ? "bg-dark navbar-dark" : "bg-light navbar-light";
@@ -70,16 +79,22 @@ export default function Navbar() {
                   Search Articles
                 </Link>
               </li>
-              <li className={"nav-item"}>
-                <Link
-                  href="/login"
-                  className={
-                    "nav-link" + (pathname == "/login" ? " active" : "")
-                  }
-                >
-                  Login
-                </Link>
-              </li>
+              {isLoggedIn ? (
+                <>
+                  <li className={"nav-item"}>
+                    <Link href="/admin/dashboard" className={"nav-link"}>Dashboard</Link>
+                  </li>
+                  <li>
+                    <a href="" onClick={handleLogout} className={"nav-link"}>Logout</a>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className={"nav-item"}>
+                    <Link href="/login" className={"nav-link"}>Login</Link>
+                  </li>
+                </>
+              )}
             </ul>
             <button className="btn btn-secondary" onClick={toggleTheme}>
               {theme === "dark" ? (
