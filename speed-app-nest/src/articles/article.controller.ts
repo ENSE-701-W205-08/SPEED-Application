@@ -46,6 +46,11 @@ export class ArticleController {
     return this.articleService.getUnapprovedArticles();
   }
 
+  @Get('approved')
+  async getApprovedArticles() {
+    return this.articleService.getApprovedArticles();
+  }
+
   // Endpoint to approve an article
   @Patch(':id/approve')
   async approveArticle(@Param('id') id: string) {
@@ -55,6 +60,6 @@ export class ArticleController {
   // Endpoint to reject an article
   @Patch(':id/reject')
   async rejectArticle(@Param('id') id: string) {
-    return this.articleService.updateApprovalStatus(id, false);
+    return this.articleService.deleteArticle(id);
   }
 }
