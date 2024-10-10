@@ -1,4 +1,5 @@
 import { destinationUrl } from "./api";
+import { Article } from "./articleHelper";
 
 // Approve an article
 export const approveArticle = async (id: string) => {
@@ -61,3 +62,20 @@ export const fetchUnapprovedArticles = async () => {
     throw error;
   }
 };
+
+export const fetchApprovedArticles = async () => {
+  try {
+    const response = await fetch(destinationUrl + "articles/approved");
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch approved articles: ${response.statusText}`
+      );
+    }
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Error fetching approved articles:", error);
+    throw error;
+  }
+}
