@@ -138,4 +138,9 @@ export class ArticleService {
       { new: true },
     );
   }
+
+  // Delete an article by ID
+  async deleteArticle(id: string): Promise<ArticleDocument> {
+    return this.articleModel.findByIdAndDelete(id);
+  }
 }

@@ -60,6 +60,6 @@ export class ArticleController {
   // Endpoint to reject an article
   @Patch(':id/reject')
   async rejectArticle(@Param('id') id: string) {
-    return this.articleService.updateApprovalStatus(id, false);
+    return this.articleService.deleteArticle(id);
   }
 }
