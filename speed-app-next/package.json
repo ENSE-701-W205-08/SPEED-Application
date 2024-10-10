@@ -15,6 +15,7 @@
     "bibtex-js-parser": "^1.1.6",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "leven": "^4.0.0",
     "lodash": "^4.17.21",
     "next": "^14.2.14",
     "react": "^18",

@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from "react";
+import leven from 'leven'; // Levenshtein distance library
 import {
   approveArticle,
   fetchUnapprovedArticles,
@@ -16,6 +17,7 @@ const ReviewUnapprovedArticles = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Sorting state
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null); // Store the selected article
   const [showModal, setShowModal] = useState(false); // State for showing/hiding the modal
+  const [selectedDuplicate, setSelectedDuplicate] = useState<Article | null>(null); // Store the selected duplicate for comparison
 
   const { isLoggedIn } = useAuth(); // Access global login state and login action
   const router = useRouter();
@@ -39,6 +41,40 @@ const ReviewUnapprovedArticles = () => {
       getUnapprovedArticles();
     }
   }, [router, isLoggedIn]);
+
+  // Identify potential duplicates using Levenshtein distance
+  const findDuplicates = (article: Article) => {
+    const threshold = 5; // Maximum Levenshtein distance for a string to be considered similar
+
+    return unapprovedArticles.filter((otherArticle) => {
+      if (otherArticle._id === article._id) {
+        return false; // Exclude the current article from comparison
+      }
+
+      // Calculate Levenshtein distance for title, DOI, and author fields
+      const titleDistance = leven(otherArticle.title.toLowerCase(), article.title.toLowerCase());
+      const doiDistance = otherArticle.doi && article.doi ? leven(otherArticle.doi.toLowerCase(), article.doi.toLowerCase()) : Infinity;
+      const authorDistance = leven(otherArticle.author.toLowerCase(), article.author.toLowerCase());
+
+      // Check if any of these fields are similar enough based on the threshold
+      return titleDistance <= threshold || doiDistance <= threshold || authorDistance <= threshold;
+    });
+  };
+
+  // Highlight differences based on Levenshtein distance
+  const highlightDifferences = (original: string, duplicate: string) => {
+    const distance = leven(original, duplicate);
+
+    if (distance === 0) {
+      return 'bg-danger text-white'; // Identical fields (Red)
+    } else if (distance === 1) {
+      return 'bg-orange text-dark'; // One transformation (Orange)
+    } else if (distance === 2) {
+      return 'bg-warning text-dark'; // Two transformations (Yellow)
+    } else {
+      return ''; // No highlighting if the strings are sufficiently different
+    }
+  };
 
   // Sort articles by submission date
   const handleSort = () => {
@@ -87,12 +123,14 @@ const ReviewUnapprovedArticles = () => {
   const handleArticleClick = (article: Article) => {
     setSelectedArticle(article);
     setShowModal(true); // Show the modal when an article is clicked
+    setSelectedDuplicate(null); // Reset the selected duplicate when opening a new article
   };
 
   // Handle closing the modal
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedArticle(null); // Clear selected article when closing modal
+    setSelectedDuplicate(null); // Reset selected duplicate
   };
 
   if (!isLoggedIn) {
@@ -121,43 +159,52 @@ const ReviewUnapprovedArticles = () => {
             </tr>
           </thead>
           <tbody>
-            {unapprovedArticles.map((article) => (
-              <tr
-                key={article._id}
-                onClick={() => handleArticleClick(article)}
-                style={{ cursor: "pointer" }}
-              >
-                <td>{article.title}</td>
-                <td>{article.description}</td>
-                <td>
-                  {new Date(article.dateOfSubmission).toLocaleDateString()}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-success btn-sm me-2"
-                    onClick={() => handleApprove(article._id)}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => handleReject(article._id)}
-                  >
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {unapprovedArticles.map((article) => {
+              const potentialDuplicates = findDuplicates(article); // Check for potential duplicates
+              return (
+                <tr
+                  key={article._id}
+                  onClick={() => handleArticleClick(article)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>
+                    {article.title}{" "}
+                    {potentialDuplicates.length > 0 && (
+                      <span className="text-warning">(Potential Duplicate)</span> // Show potential duplicate in the table
+                    )}
+                  </td>
+                  <td>{article.description}</td>
+                  <td>
+                    {new Date(article.dateOfSubmission).toLocaleDateString()}
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-success btn-sm me-2"
+                      onClick={() => handleApprove(article._id)}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleReject(article._id)}
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
+
       {/* Modal for displaying article details */}
       {selectedArticle && (
         <div
           className={`modal fade ${showModal ? "show" : ""}`}
           style={{ display: showModal ? "block" : "none" }}
         >
-          <div className="modal-dialog">
+          <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Article Details</h5>
@@ -168,46 +215,92 @@ const ReviewUnapprovedArticles = () => {
                 ></button>
               </div>
               <div className="modal-body">
-                <p>
-                  <strong>Title:</strong> {selectedArticle.title}
-                </p>
-                <p>
-                  <strong>Author:</strong> {selectedArticle.author}
-                </p>
-                <p>
-                  <strong>Year:</strong> {selectedArticle.year}
-                </p>
-                <p>
-                  <strong>Journal:</strong> {selectedArticle.journal || "N/A"}
-                </p>
-                <p>
-                  <strong>Volume:</strong> {selectedArticle.volume || "N/A"}
-                </p>
-                <p>
-                  <strong>Number:</strong> {selectedArticle.number || "N/A"}
-                </p>
-                <p>
-                  <strong>DOI:</strong> {selectedArticle.doi || "N/A"}
-                </p>
-                <p>
-                  <strong>URL:</strong> {selectedArticle.url || "N/A"}
-                </p>
-                <p>
-                  <strong>ISSN:</strong> {selectedArticle.issn || "N/A"}
-                </p>
-                <p>
-                  <strong>Copyright:</strong>{" "}
-                  {selectedArticle.copyright || "N/A"}
-                </p>
-                <p>
-                  <strong>Description:</strong> {selectedArticle.description}
-                </p>
-                <p>
-                  <strong>Date of Submission:</strong>{" "}
-                  {new Date(
-                    selectedArticle.dateOfSubmission
-                  ).toLocaleDateString()}
-                </p>
+                <div className="d-flex flex-wrap justify-content-between">
+                  {/* Main Info Card */}
+                  <div className="card mb-3 flex-fill" style={{ minWidth: "45%" }}>
+                    <div className="card-body">
+                      <h5 className="card-title">Main Information</h5>
+                      <p><strong>Title:</strong> {selectedArticle.title}</p>
+                      <p><strong>Author:</strong> {selectedArticle.author}</p>
+                      <p><strong>Year:</strong> {selectedArticle.year}</p>
+                      <p><strong>Journal:</strong> {selectedArticle.journal || "N/A"}</p>
+                      <p><strong>Volume:</strong> {selectedArticle.volume || "N/A"}</p>
+                      <p><strong>Number:</strong> {selectedArticle.number || "N/A"}</p>
+                      <p><strong>DOI:</strong> {selectedArticle.doi || "N/A"}</p>
+                      <p><strong>URL:</strong> {selectedArticle.url || "N/A"}</p>
+                      <p><strong>ISSN:</strong> {selectedArticle.issn || "N/A"}</p>
+                      <p><strong>Description:</strong> {selectedArticle.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Comparison Card */}
+                  {selectedDuplicate && (
+                    <div className="card mb-3 flex-fill" style={{ minWidth: "45%" }}>
+                      <div className="card-body">
+                        <h5 className="card-title">Comparison</h5>
+                        <p className={highlightDifferences(selectedArticle.title, selectedDuplicate.title)}>
+                          <strong>Title:</strong> {selectedDuplicate.title}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.author, selectedDuplicate.author)}>
+                          <strong>Author:</strong> {selectedDuplicate.author}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.year.toString(), selectedDuplicate.year.toString())}>
+                          <strong>Year:</strong> {selectedDuplicate.year}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.journal || "", selectedDuplicate.journal || "")}>
+                          <strong>Journal:</strong> {selectedDuplicate.journal || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.volume || "", selectedDuplicate.volume || "")}>
+                          <strong>Volume:</strong> {selectedDuplicate.volume || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.number || "", selectedDuplicate.number || "")}>
+                          <strong>Number:</strong> {selectedDuplicate.number || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.doi || "", selectedDuplicate.doi || "")}>
+                          <strong>DOI:</strong> {selectedDuplicate.doi || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.url || "", selectedDuplicate.url || "")}>
+                          <strong>URL:</strong> {selectedDuplicate.url || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.issn || "", selectedDuplicate.issn || "")}>
+                          <strong>ISSN:</strong> {selectedDuplicate.issn || "N/A"}
+                        </p>
+                        <p className={highlightDifferences(selectedArticle.description || "", selectedDuplicate.description || "")}>
+                          <strong>Description:</strong> {selectedDuplicate.description}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Duplicates Card */}
+                {findDuplicates(selectedArticle).length > 0 && (
+                  <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">Potential Duplicates</h5>
+                      <ul>
+                        {findDuplicates(selectedArticle).map((duplicate) => (
+                          <li
+                            key={duplicate._id}
+                            onClick={() => setSelectedDuplicate(duplicate)}
+                            style={{ cursor: "pointer", color: 'blue' }}
+                          >
+                            {duplicate.title}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    {/* Key for Highlighting */}
+                    <div className="alert alert-info">
+                      <strong>Highlight Key:</strong>
+                      <ul>
+                        <li><span className="bg-danger text-white px-2">Red</span> - Identical fields (Levenshtein distance = 0)</li>
+                        <li><span className="bg-orange text-dark px-2">Orange</span> - One transformation required (Levenshtein distance = 1)</li>
+                        <li><span className="bg-warning text-dark px-2">Yellow</span> - Two transformations required (Levenshtein distance = 2)</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="modal-footer">
                 <button
@@ -245,8 +338,7 @@ const ReviewUnapprovedArticles = () => {
           className="modal-backdrop fade show"
           onClick={handleCloseModal}
         ></div>
-      )}{" "}
-      {/* Modal backdrop */}
+      )}
     </div>
   );
 };
