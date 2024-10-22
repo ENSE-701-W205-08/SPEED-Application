@@ -7,6 +7,7 @@ import {
   fetchUnapprovedArticles,
   rejectArticle,
 } from "@/utils/article-api"; // Import the API function
+import { findDuplicates } from "@/utils/duplicateHelper";
 import { Article } from "@/utils/articleHelper";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/utils/AuthContext";
@@ -41,25 +42,6 @@ const ReviewUnapprovedArticles = () => {
       getUnapprovedArticles();
     }
   }, [router, isLoggedIn]);
-
-  // Identify potential duplicates using Levenshtein distance
-  const findDuplicates = (article: Article) => {
-    const threshold = 5; // Maximum Levenshtein distance for a string to be considered similar
-
-    return unapprovedArticles.filter((otherArticle) => {
-      if (otherArticle._id === article._id) {
-        return false; // Exclude the current article from comparison
-      }
-
-      // Calculate Levenshtein distance for title, DOI, and author fields
-      const titleDistance = leven(otherArticle.title.toLowerCase(), article.title.toLowerCase());
-      const doiDistance = otherArticle.doi && article.doi ? leven(otherArticle.doi.toLowerCase(), article.doi.toLowerCase()) : Infinity;
-      const authorDistance = leven(otherArticle.author.toLowerCase(), article.author.toLowerCase());
-
-      // Check if any of these fields are similar enough based on the threshold
-      return titleDistance <= threshold || doiDistance <= threshold || authorDistance <= threshold;
-    });
-  };
 
   // Highlight differences based on Levenshtein distance
   const highlightDifferences = (original: string, duplicate: string) => {
@@ -160,7 +142,7 @@ const ReviewUnapprovedArticles = () => {
           </thead>
           <tbody>
             {unapprovedArticles.map((article) => {
-              const potentialDuplicates = findDuplicates(article); // Check for potential duplicates
+              const potentialDuplicates = findDuplicates(article, unapprovedArticles); // Check for potential duplicates
               return (
                 <tr
                   key={article._id}
@@ -274,12 +256,12 @@ const ReviewUnapprovedArticles = () => {
                 </div>
 
                 {/* Duplicates Card */}
-                {findDuplicates(selectedArticle).length > 0 && (
+                {findDuplicates(selectedArticle, unapprovedArticles).length > 0 && (
                   <div className="card">
                     <div className="card-body">
                       <h5 className="card-title">Potential Duplicates</h5>
                       <ul>
-                        {findDuplicates(selectedArticle).map((duplicate) => (
+                        {findDuplicates(selectedArticle, unapprovedArticles).map((duplicate) => (
                           <li
                             key={duplicate._id}
                             onClick={() => setSelectedDuplicate(duplicate)}
